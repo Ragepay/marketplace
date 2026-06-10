@@ -1,50 +1,91 @@
+<div align="center">
+
+<img src="https://github.com/user-attachments/assets/4457d2d8-ca4d-40c8-b106-6c819569255e" width="120">
+
 # PopMart — Marketplace 🏬
 
-<img src="https://github.com/user-attachments/assets/4457d2d8-ca4d-40c8-b106-6c819569255e" width="160">
+**Marketplace de la comunidad estilo Facebook Marketplace.**
+Publicá lo que querés vender, quien le interesa te escribe por chat, y cierran el trato.
 
-Marketplace de la comunidad estilo Facebook Marketplace: cualquiera publica lo que quiere vender y quien le interesa se contacta por chat. Pensado para comprar, vender y coordinar entre personas.
+<img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black">
+<img src="https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white">
+<img src="https://img.shields.io/badge/Node-20-339933?logo=nodedotjs&logoColor=white">
+<img src="https://img.shields.io/badge/Express-4-000000?logo=express">
+<img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white">
+<img src="https://img.shields.io/badge/Socket.IO-realtime-010101?logo=socketdotio&logoColor=white">
+<img src="https://img.shields.io/badge/Cloudinary-images-3448C5?logo=cloudinary&logoColor=white">
 
-> **Stack:** React + Vite (frontend) · Node + Express + MongoDB (backend) · Cloudinary (imágenes) · Socket.IO (chat en tiempo real)
+</div>
+
+---
+
+## 📑 Índice
+
+- [Características](#-características)
+- [Demo](#-demo)
+- [Arquitectura](#-arquitectura)
+- [Desarrollo local](#-desarrollo-local)
+- [Variables de entorno](#variables-de-entorno)
+- [Tests & CI](#-tests--ci)
+- [Deploy](#-deploy)
+- [API](#-api-resumen)
+- [Scripts npm](#-scripts-npm)
+- [Scripts de mantenimiento](#-scripts-de-mantenimiento)
+- [Roadmap](#-roadmap)
+- [Equipo](#-equipo)
 
 ---
 
 ## ✨ Características
 
-- **Catálogo** con búsqueda, filtros por precio/categoría/provincia y orden, todo resuelto en el servidor.
-- **Scroll infinito** (carga progresiva hasta 60) + paginación por bloques.
-- **Publicaciones** con múltiples imágenes, categoría, ubicación y estado (Disponible / Reservado / Vendido).
-- **Chat en tiempo real** (WebSockets) entre comprador y vendedor, con contador de mensajes no leídos.
-- **Favoritos** persistidos en la cuenta (sincronizados entre dispositivos).
-- **Cuentas**: registro, login, invitado, recuperación de contraseña, verificación de email.
-- **Perfil**: editar datos, cambiar contraseña; **perfil público** del vendedor con reseñas y reputación ⭐.
-- **Moderación**: reportar publicaciones + panel de administración.
-- **Tema claro / oscuro** y diseño responsive.
+| | |
+|---|---|
+| 🛒 **Catálogo** | Búsqueda + filtros (precio / categoría / provincia) y orden, resueltos en el servidor |
+| ♾️ **Scroll infinito** | Carga progresiva hasta 60 ítems + paginación por bloques |
+| 📦 **Publicaciones** | Múltiples imágenes, categoría, ubicación y estado (Disponible / Reservado / Vendido) |
+| 💬 **Chat en tiempo real** | WebSockets entre comprador y vendedor + contador de no leídos por chat |
+| ❤️ **Favoritos** | Persistidos en la cuenta, sincronizados entre dispositivos |
+| 👤 **Cuentas & perfil** | Registro, login, invitado, recuperar/verificar email, editar perfil y contraseña |
+| ⭐ **Reputación** | Perfil público del vendedor con reseñas y promedio |
+| 🛡️ **Moderación** | Reportar publicaciones + panel de administración (rol admin) |
+| 🌓 **UX** | Tema claro / oscuro, responsive, SEO/Open Graph por vista |
 
 ---
 
-## 🧱 Stack y arquitectura
+## 🌐 Demo
+
+| Entorno | URL |
+|---------|-----|
+| Frontend (Vercel) | _agregar URL_ |
+| Backend (Railway) | _agregar URL_ |
+
+> _Tip: reemplazá estas URLs cuando deployees y agregá un par de capturas acá abajo._
+
+---
+
+## 🧱 Arquitectura
 
 ```
-backend/   Node + Express + Mongoose (MongoDB Atlas)
-  src/
-    app.js            # Express, CORS, helmet, rate-limit, socket.io
-    socket.js         # WebSockets (chat en tiempo real)
-    controllers/      # user, product, chat, review, report
-    models/           # user, product, chat, review, report
-    routes/           # users, products, chats, reviews, reports
-    middlewares/      # auth (JWT), cloudinary
-    scripts/          # mantenimiento de datos (orphans, status, admin)
-
-frontend/  React 18 + Vite + CSS custom
-  src/
-    pages/            # Landing, Register, Home, Detail, Cart, Chat(s),
-                      # Profile, Seller, Product, Recover, Verify, Admin
-    components/       # Navbar, Footer, card, cards, Carousel
-    context/          # CartContext (favoritos), ThemeContext
-    hooks/useMeta.js  # SEO / Open Graph por vista
+c20-21-m-node-react/
+├── backend/                Node + Express + Mongoose (MongoDB Atlas)
+│   └── src/
+│       ├── app.js          Express · CORS · helmet · rate-limit · socket.io
+│       ├── socket.js       WebSockets (chat en tiempo real)
+│       ├── controllers/    user · product · chat · review · report
+│       ├── models/         user · product · chat · review · report
+│       ├── routes/         users · products · chats · reviews · reports
+│       ├── middlewares/    auth (JWT) · cloudinary
+│       └── scripts/        mantenimiento de datos
+└── frontend/               React 18 + Vite + CSS custom
+    └── src/
+        ├── pages/          Landing · Home · Detail · Cart · Chat(s) · Profile
+        │                   Seller · Product · Recover · Verify · Admin
+        ├── components/     Navbar · Footer · card · cards · Carousel
+        ├── context/        CartContext (favoritos) · ThemeContext
+        └── hooks/useMeta   SEO / Open Graph por vista
 ```
 
-- **Auth:** JWT (24h) + bcrypt. Header `Authorization: Bearer <token>`.
+- **Auth:** JWT (24h) + bcrypt — header `Authorization: Bearer <token>`.
 - **Imágenes:** Cloudinary vía `express-fileupload`.
 - **Tiempo real:** Socket.IO con auth JWT en el handshake y salas por chat.
 
@@ -52,24 +93,22 @@ frontend/  React 18 + Vite + CSS custom
 
 ## 🚀 Desarrollo local
 
-Requisitos: Node 20+, una base MongoDB y cuenta de Cloudinary.
+> Requisitos: **Node 20+**, una base **MongoDB** y cuenta de **Cloudinary**.
 
 ```bash
-# Backend
-cd backend
-npm install
-npm run dev        # http://localhost:5000
+# Backend  → http://localhost:5000
+cd backend && npm install && npm run dev
 
-# Frontend (en otra terminal)
-cd frontend
-npm install
-npm run dev        # http://localhost:5173 (proxy /api → :5000)
+# Frontend → http://localhost:5173  (proxy /api → :5000)
+cd frontend && npm install && npm run dev
 ```
 
 ### Variables de entorno
 
-**backend/.env**
-```
+<details>
+<summary><b>backend/.env</b></summary>
+
+```env
 PORT=5000
 API_USER=...                 # usuario de MongoDB Atlas
 API_PASSWORD=...             # password de MongoDB Atlas
@@ -81,44 +120,71 @@ CLOUDINARY_API_KEY=...
 CLOUDINARY_API_SECRET=...
 FRONTEND_URL=https://tu-frontend.vercel.app
 ```
+</details>
 
-**frontend/.env**
-```
+<details>
+<summary><b>frontend/.env</b></summary>
+
+```env
 VITE_URL_BACKEND=http://localhost:5000   # en prod: URL pública del backend
 ```
+</details>
 
-> ⚠️ Nunca commitees `.env` (está en `.gitignore`). Si alguna credencial se subió alguna vez, rotala.
+> ⚠️ Nunca commitees `.env` (está en `.gitignore`). Si alguna credencial se subió alguna vez, **rotala**.
 
 ---
 
-## 🧪 Tests
+## 🧪 Tests & CI
 
 ```bash
 cd frontend && npm test   # Vitest + Testing Library
 cd backend  && npm test   # Vitest + supertest
 ```
 
-El CI (GitHub Actions, `.github/workflows/ci.yml`) corre lint + tests + build en cada push/PR a `main` y `develop`.
+El **CI** (GitHub Actions, [`.github/workflows/ci.yml`](.github/workflows/ci.yml)) corre lint + tests + build en cada push/PR a `main` y `develop`.
 
 ---
 
 ## ☁️ Deploy
 
-- **Backend → Railway** (mantiene conexiones WebSocket). Configurar las env del backend; Railway expone el puerto vía `PORT`.
-- **Frontend → Vercel.** Setear `VITE_URL_BACKEND` con la URL pública de Railway.
-- Agregar el dominio de Vercel a `FRONTEND_URL` (se usa para CORS y sockets).
+| Servicio | Plataforma | Notas |
+|----------|-----------|-------|
+| Backend | **Railway** | Soporta WebSockets. Expone el puerto vía `PORT`. Setear todas las env del backend. |
+| Frontend | **Vercel** | `VITE_URL_BACKEND` = URL pública de Railway. |
+
+> Agregá el dominio de Vercel a `FRONTEND_URL` del backend (se usa para CORS y sockets).
 
 ---
 
 ## 🔌 API (resumen)
 
-| Recurso | Base | Notas |
-|---------|------|-------|
-| Usuarios | `/api/users` | login/register/recover/reset/verify públicos; resto con auth |
-| Productos | `/api/products` | GET público; escritura con auth (dueño) |
+| Recurso | Base | Acceso |
+|---------|------|--------|
+| Usuarios | `/api/users` | `login` · `register` · `recover` · `reset` · `verify` públicos; resto con auth |
+| Productos | `/api/products` | GET público; escritura solo dueño |
 | Chats | `/api/chats` | todos con auth; tiempo real por Socket.IO |
 | Reseñas | `/api/reviews` | GET público; crear con auth |
 | Reportes | `/api/reports` | crear con auth; listar/resolver solo admin |
+
+---
+
+## 📜 Scripts npm
+
+**Backend**
+| Script | Acción |
+|--------|--------|
+| `npm run dev` | Servidor con recarga (`--watch`) |
+| `npm start` | Servidor en producción |
+| `npm test` | Tests (Vitest + supertest) |
+| `npm run push --m="msg"` | `add -A` + commit con tu mensaje + push de la rama actual |
+
+**Frontend**
+| Script | Acción |
+|--------|--------|
+| `npm run dev` | Vite en desarrollo |
+| `npm run build` | Build de producción |
+| `npm test` | Tests (Vitest) |
+| `npm run lint` | ESLint |
 
 ---
 
@@ -135,22 +201,11 @@ node scripts/make-admin.mjs email@dom.com  # promueve un usuario a admin
 
 ## 🗺️ Roadmap
 
-El detalle de fases y mejoras pendientes (incluidos pagos) está en [`docs/ROADMAP.md`](docs/ROADMAP.md).
+Fases implementadas y pendientes (incluidos pagos con Mercado Pago) en [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ---
 
-## 👥 Colaboradores
+## 👥 Equipo
 
 <a href="https://www.linkedin.com/in/nicolasadelramos/" target="_blank">
 <img src="https://img.shields.io/badge/-Nicolás%20Ramos-0A66C2?logo=linkedin"></a>
-
-## Tecnologías
-
-<img src="https://img.shields.io/badge/-NodeJS-339933?logo=nodedotjs&logoColor=white">
-<img src="https://img.shields.io/badge/-Express-000000?logo=express">
-<img src="https://img.shields.io/badge/-MongoDB-47A248?logo=mongodb&logoColor=white">
-<img src="https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black">
-<img src="https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white">
-<img src="https://img.shields.io/badge/-Socket.IO-010101?logo=socketdotio&logoColor=white">
-<img src="https://img.shields.io/badge/-Cloudinary-3448C5?logo=cloudinary&logoColor=white">
-<img src="https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black">
