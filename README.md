@@ -205,7 +205,9 @@ Fases implementadas y pendientes (incluidos pagos con Mercado Pago) en [`docs/RO
 
 ---
 
-## 👥 Equipo
+## 👤 Autor
 
-<a href="https://www.linkedin.com/in/nicolasadelramos/" target="_blank">
-<img src="https://img.shields.io/badge/-Nicolás%20Ramos-0A66C2?logo=linkedin"></a>
+**Benjamin Peyraga** — [@Ragepay](https://github.com/Ragepay)
+
+<a href="https://github.com/Ragepay" target="_blank">
+<img src="https://img.shields.io/badge/-Ragepay-181717?logo=github&logoColor=white"></a>
