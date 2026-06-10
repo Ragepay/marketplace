@@ -111,6 +111,12 @@
   line-height: 1;
 }
 
+/* Chats: color distinto al de favoritos para diferenciarlos */
+.navbar-badge-chat {
+  background: var(--accent);
+  color: #08110d;
+}
+
 /* User dropdown */
 .navbar-user-menu {
   position: relative;

@@ -88,7 +88,7 @@ const NavBar = () => {
           {isAuthenticated && (
             <button className="navbar-icon-btn" onClick={() => go("/chats")} aria-label="Chats">
               <FiMessageCircle />
-              {unread > 0 && <span className="navbar-badge">{unread}</span>}
+              {unread > 0 && <span className="navbar-badge navbar-badge-chat">{unread}</span>}
             </button>
           )}
 
