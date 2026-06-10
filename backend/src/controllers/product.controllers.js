@@ -260,8 +260,10 @@ export const deleteProductById = async (req, res) => {
       return res.status(404).json({ status: "error", message: "Producto no encontrado." });
     }
 
-    // Verificar que el usuario es el dueño
-    if (product.ownerId?.toString() !== userId.toString()) {
+    // Permitir si es el dueño o un administrador (moderación)
+    const requester = await UserModel.findById(userId).select("isAdmin");
+    const isOwner = product.ownerId?.toString() === userId.toString();
+    if (!isOwner && !requester?.isAdmin) {
       return res.status(403).json({ status: "error", message: "No tienes permiso para eliminar este producto." });
     }
 
@@ -271,8 +273,10 @@ export const deleteProductById = async (req, res) => {
       await Promise.allSettled(product.productImage.map((img) => deleteImage(img.public_id)));
     }
 
-    // Remover el producto del array del usuario
-    await UserModel.findByIdAndUpdate(userId, { $pull: { products: productId } });
+    // Remover el producto del array del dueño real
+    if (product.ownerId) {
+      await UserModel.findByIdAndUpdate(product.ownerId, { $pull: { products: productId } });
+    }
 
     return res.status(200).json({ status: "success", message: "Producto eliminado." });
   } catch (error) {
