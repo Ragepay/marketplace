@@ -43,6 +43,32 @@ export const AdminReports = () => {
     }
   };
 
+  const deletePublication = async (report) => {
+    const productId = report.productId?._id;
+    if (!productId) return;
+    if (!window.confirm("¿Eliminar la publicación reportada? No se puede deshacer.")) return;
+    try {
+      const res = await fetch(`${BACKEND}/api/products/${productId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("No se pudo eliminar la publicación.");
+      // marcar el reporte resuelto y reflejar que el producto ya no existe
+      await fetch(`${BACKEND}/api/reports/${report._id}/resolve`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReports((prev) =>
+        prev.map((r) =>
+          r._id === report._id ? { ...r, status: "resolved", productId: null } : r
+        )
+      );
+      toast.success("Publicación eliminada y reporte resuelto.");
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
   return (
     <>
       <NavBar />
@@ -70,11 +96,18 @@ export const AdminReports = () => {
                     por {r.byUser?.name || "—"} · {r.status === "open" ? "Abierto" : "Resuelto"}
                   </span>
                 </div>
-                {r.status === "open" && (
-                  <button className="admin-resolve" onClick={() => resolve(r._id)}>
-                    Marcar resuelto
-                  </button>
-                )}
+                <div className="admin-report-actions">
+                  {r.productId?._id && (
+                    <button className="admin-delete" onClick={() => deletePublication(r)}>
+                      Eliminar publicación
+                    </button>
+                  )}
+                  {r.status === "open" && (
+                    <button className="admin-resolve" onClick={() => resolve(r._id)}>
+                      Marcar resuelto
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

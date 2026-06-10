@@ -52,6 +52,9 @@ export const Chats = () => {
   const lastMessage = (chat) =>
     chat.messages?.length ? chat.messages[chat.messages.length - 1].contenido : "Sin mensajes aún";
 
+  const unreadCount = (chat) =>
+    chat.messages?.filter((m) => m.emisor?.toString() !== userId && !m.read).length || 0;
+
   return (
     <>
       <NavBar />
@@ -77,10 +80,11 @@ export const Chats = () => {
               const avatar = Array.isArray(partner.image)
                 ? partner.image[0]
                 : partner.image;
+              const unread = unreadCount(chat);
               return (
                 <div
                   key={chat._id}
-                  className="chat-item"
+                  className={`chat-item${unread ? " unread" : ""}`}
                   role="button"
                   tabIndex={0}
                   onClick={() => navigate(`/chat/${chat._id}`)}
@@ -98,6 +102,7 @@ export const Chats = () => {
                     <span className="chat-item-name">{name}</span>
                     <span className="chat-item-last">{lastMessage(chat)}</span>
                   </div>
+                  {unread > 0 && <span className="chat-item-unread">{unread}</span>}
                   <button
                     className="chat-item-delete"
                     onClick={(e) => handleDelete(e, chat._id)}

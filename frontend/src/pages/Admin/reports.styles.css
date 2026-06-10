@@ -54,6 +54,24 @@
   color: var(--text-muted);
 }
 
+.admin-report-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admin-delete {
+  background: rgba(255, 87, 87, 0.12);
+  color: var(--error);
+  border: 1px solid rgba(255, 87, 87, 0.3);
+  border-radius: var(--radius-md);
+  padding: 8px 14px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.admin-delete:hover { background: rgba(255, 87, 87, 0.2); }
+
 .admin-resolve {
   flex-shrink: 0;
   background: var(--accent);
