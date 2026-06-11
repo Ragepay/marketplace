@@ -3,7 +3,7 @@
 ## Stack
 - **Backend**: Node + Express + MongoDB Atlas (Mongoose) — Vercel
 - **Frontend**: React 18 + Vite + CSS custom — Vercel
-- **Auth**: JWT 24h + bcrypt | **Images**: Cloudinary (express-fileupload)
+- **Auth**: JWT 24h + bcrypt | **Images**: Cloudinary (express-fileupload).
 
 ## Estructura clave
 ```
