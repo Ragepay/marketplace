@@ -42,9 +42,30 @@ const NavBar = () => {
         .then((data) => setUnread(data.count || 0))
         .catch(() => {});
     };
-    loadUnread();
-    const interval = setInterval(loadUnread, 20000);
-    return () => clearInterval(interval);
+
+    // Solo polleamos cuando la pestaña está visible: una pestaña olvidada en
+    // segundo plano deja de pegarle al backend y permite que Railway se duerma.
+    let interval = null;
+    const startPolling = () => {
+      if (interval) return;
+      loadUnread();
+      interval = setInterval(loadUnread, 20000);
+    };
+    const stopPolling = () => {
+      clearInterval(interval);
+      interval = null;
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") startPolling();
+      else stopPolling();
+    };
+
+    if (document.visibilityState === "visible") startPolling();
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      stopPolling();
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   useEffect(() => {
