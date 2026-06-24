@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import { ChatModel } from "./models/chat.model.js";
+import { ensureDB, touchActivity } from "./db.js";
 
 export const initSocket = (httpServer, allowedOrigins) => {
   const io = new Server(httpServer, {
@@ -24,9 +25,13 @@ export const initSocket = (httpServer, allowedOrigins) => {
   });
 
   io.on("connection", (socket) => {
+    touchActivity(); // un chat abierto cuenta como actividad
+
     // Unirse a la sala de un chat (verificando que el usuario pertenece)
     socket.on("join-chat", async (chatId) => {
       try {
+        await ensureDB();
+        touchActivity();
         const chat = await ChatModel.findById(chatId).select("users");
         if (chat && chat.users.some((u) => u.toString() === socket.userId)) {
           socket.join(chatId);
