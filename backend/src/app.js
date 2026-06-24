@@ -1,6 +1,5 @@
 import express from "express";
 import http from "http";
-import mongoose from "mongoose";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -10,11 +9,10 @@ import chatRoute from "./routes/chats.router.js";
 import reviewsRoute from "./routes/reviews.router.js";
 import reportsRoute from "./routes/reports.router.js";
 import { initSocket } from "./socket.js";
+import { ensureDB, touchActivity, setActiveSocketsGetter } from "./db.js";
 import { config } from "./config.js";
 
 const PORT = config.port;
-const API_USER = config.api_user;
-const API_PASSWORD = config.api_password;
 const app = express();
 
 const allowedOrigins = [
@@ -47,6 +45,23 @@ const authLimiter = rateLimit({
 app.use("/api/users/login", authLimiter);
 app.use("/api/users/register", authLimiter);
 
+// Conexión lazy a Mongo: aseguramos la conexión en cada request y marcamos
+// actividad. Si la app está dormida, la primera request la reconecta.
+// En tests no tocamos Mongo (los tests son de validación/auth).
+if (process.env.NODE_ENV !== "test") {
+  app.use(async (req, res, next) => {
+    try {
+      await ensureDB();
+      touchActivity();
+      next();
+    } catch (err) {
+      res
+        .status(503)
+        .json({ error: "Servicio iniciando, reintente en unos segundos" });
+    }
+  });
+}
+
 app.use("/api/products", productsRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/chats", chatRoute);
@@ -58,27 +73,17 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Error interno del servidor" });
 });
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect(
-      `mongodb+srv://${API_USER}:${API_PASSWORD}@coderback.vqrxnc2.mongodb.net/?retryWrites=true&w=majority&appName=Coderback`,
-      { dbName: "Marketplace" }
-    );
-    console.log("Listo la base de datos");
-  } catch (error) {
-    console.error("Error conectando a la base de datos:", error.message);
-    process.exit(1);
-  }
-};
-
-// En tests no conectamos a la DB ni levantamos el server
+// En tests no levantamos el server ni conectamos a la DB.
+// No conectamos a Mongo en el arranque a propósito: la conexión es lazy
+// (ver middleware arriba) para que la app pueda dormir cuando no hay tráfico.
 if (process.env.NODE_ENV !== "test") {
-  connectDB();
-
   // Server HTTP + WebSockets (socket.io)
   const server = http.createServer(app);
   const io = initSocket(server, allowedOrigins);
   app.set("io", io); // accesible desde controllers vía req.app.get("io")
+
+  // La desconexión por inactividad respeta los chats abiertos.
+  setActiveSocketsGetter(() => io.engine?.clientsCount || 0);
 
   server.listen(PORT, () => {
     console.log(`Servidor ON, PORT: ${PORT}`);
